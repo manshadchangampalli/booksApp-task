@@ -15,6 +15,7 @@
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 */
+import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 // reactstrap components
 import {
@@ -35,6 +36,8 @@ import {
 } from "reactstrap";
 
 const AdminNavbar = (props) => {
+
+  const state = useSelector(state => state.email)
   return (
     <>
       <Navbar className="navbar-top navbar-dark" expand="md" id="navbar-main">
@@ -72,7 +75,7 @@ const AdminNavbar = (props) => {
                   </span>
                   <Media className="ml-2 d-none d-lg-block">
                     <span className="mb-0 text-sm font-weight-bold">
-                      Jessica Jones
+                      {state}
                     </span>
                   </Media>
                 </Media>
