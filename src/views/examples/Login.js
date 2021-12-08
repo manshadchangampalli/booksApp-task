@@ -17,6 +17,10 @@
 */
 
 // reactstrap components
+import { useState } from "react";
+import axios from 'axios';
+import { useHistory } from "react-router";
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import {
   Button,
   Card,
@@ -32,7 +36,49 @@ import {
   Col,
 } from "reactstrap";
 
+
 const Login = () => {
+  const [email,setEmail] = useState('')
+  const [password,setPassword] = useState('')
+  const [errMsg, setErrMsg] = useState({})
+  const history = useHistory()
+
+  const handlerSubmit = (e) =>{
+    e.preventDefault()
+    const auth = getAuth();
+    signInWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+          const Data = {
+          uid:userCredential.user.uid,
+          email:userCredential.user.email
+        }
+        // the api is not working so
+        axios.post("https://registertest.free.beeceptor.com/init",Data)
+        .then((response)=>{
+            if(response.status==='200'){
+              // setErrMsg({
+              //   status:false,
+              //   text:"sucess :)"
+              // }) 
+
+              history.push('/')
+            }
+        })
+        setErrMsg({
+          status:false,
+          text:"sucess :)"
+        }) 
+        history.push('/')
+      }).catch((error)=>{
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        setErrMsg({
+          status:true,
+          text:errorCode
+        }) 
+      })
+  }
+
   return (
     <>
       <Col lg="5" md="7">
@@ -41,6 +87,7 @@ const Login = () => {
             <div className="text-muted text-center mt-2 mb-3">
               <small>Sign in with</small>
             </div>
+            
             <div className="btn-wrapper text-center">
               <Button
                 className="btn-neutral btn-icon"
@@ -82,7 +129,10 @@ const Login = () => {
             <div className="text-center text-muted mb-4">
               <small>Or sign in with credentials</small>
             </div>
-            <Form role="form">
+            <div className=" text-center mt-2 mb-3">
+              <small className={errMsg.status?"text-danger":"text-success"}>{errMsg.text}</small>
+            </div>
+            <Form onSubmit={handlerSubmit} role="form">
               <FormGroup className="mb-3">
                 <InputGroup className="input-group-alternative">
                   <InputGroupAddon addonType="prepend">
@@ -91,6 +141,8 @@ const Login = () => {
                     </InputGroupText>
                   </InputGroupAddon>
                   <Input
+                    onChange={(e)=>setEmail(e.target.value)}
+                    value={email}
                     placeholder="Email"
                     type="email"
                     autoComplete="new-email"
@@ -105,6 +157,8 @@ const Login = () => {
                     </InputGroupText>
                   </InputGroupAddon>
                   <Input
+                    onChange={(e)=>setPassword(e.target.value)}
+                    value={password}
                     placeholder="Password"
                     type="password"
                     autoComplete="new-password"
@@ -125,7 +179,7 @@ const Login = () => {
                 </label>
               </div>
               <div className="text-center">
-                <Button className="my-4" color="primary" type="button">
+                <Button className="my-4" color="primary" type="submit">
                   Sign in
                 </Button>
               </div>

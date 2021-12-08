@@ -34,7 +34,9 @@ import {
   Row,
   Col,
 } from "reactstrap";
+import {useHistory} from "react-router-dom"
 import { issuedAtTime } from "@firebase/util";
+import axios from "axios";
 
 const Register = () => {
   const [name,setName] = useState('')
@@ -42,19 +44,43 @@ const Register = () => {
   const [password,setPassword] = useState('')
   const [privacy,setPrivacy] = useState(false)
   const [isStrong,setIsStrong] = useState("weak")
-  var errorMessage
+  const [errMsg,setErrMsg] = useState({status:"",text:""})
+  const history = useHistory()
 
   const handlesubmit = (e) =>{
     e.preventDefault()
     const auth = getAuth();
     createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
-        const userUID = userCredential.user.uid;
-        const userEmail = userCredential.user.email;
+
+        const Data = {
+          uid:userCredential.user.uid,
+          email:userCredential.user.email
+        }
+        // the api is not working so
+        axios.post("https://registertest.free.beeceptor.com/init",Data)
+        .then((response)=>{
+            if(response.status==='200'){
+              // setErrMsg({
+              //   status:false,
+              //   text:"sucess :)"
+              // }) 
+
+              history.push('/')
+            }
+        })
+        setErrMsg({
+          status:false,
+          text:"SUCCESS :)"
+        })
+        history.push('/')    
       })
       .catch((error) => {
         const errorCode = error.code;
-        errorMessage = error.message;
+        setErrMsg({
+          status:true,
+          text:`Error ${errorCode}`
+        })
       });
   }
 
@@ -65,7 +91,6 @@ const Register = () => {
     }else if(password.length < 6){
       setIsStrong("weak")
     }
-    console.log(password.length,isStrong);
   }
 
 
@@ -118,6 +143,9 @@ const Register = () => {
           <CardBody className="px-lg-5 py-lg-5">
             <div className="text-center text-muted mb-4">
               <small>Or sign up with credentials</small>
+            </div>
+            <div className="text-center text-muted mt-0 mb-2">
+              <small className={errMsg.status?"text-danger":"text-success"}>{errMsg.text}</small>
             </div>
             <Form role="form" onSubmit={handlesubmit}>
               <FormGroup>
@@ -191,7 +219,9 @@ const Register = () => {
                 </Col>
               </Row>
               <div className="text-center">
-                <Button disabled={isStrong==="Strong"&& privacy?false:true}  className="mt-4" color="primary" type="submit">
+                <Button style={isStrong==="Strong"&& privacy?{cursor:"pointer"}:{cursor:"not-allowed"}} 
+                disabled={isStrong==="Strong"&& privacy?false:true}  
+                className="mt-4" color="primary" type="submit">
                   Create account
                 </Button>
               </div>
