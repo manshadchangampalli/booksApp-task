@@ -17,6 +17,7 @@
 */
 
 // reactstrap components
+import { useState } from "react";
 import {
   Button,
   Card,
@@ -33,6 +34,18 @@ import {
 } from "reactstrap";
 
 const Register = () => {
+  const [name,setName] = useState('')
+  const [email,setEmail] = useState('')
+  const [password,setPassword] = useState('')
+  const [privacy,setPrivacy] = useState(false)
+  // const [isStrong,setIsStrong] = useState()
+
+  const handlesubmit = (e) =>{
+    e.preventDefault()
+    console.log(name,email,password);
+    
+  }
+
   return (
     <>
       <Col lg="6" md="8">
@@ -82,7 +95,7 @@ const Register = () => {
             <div className="text-center text-muted mb-4">
               <small>Or sign up with credentials</small>
             </div>
-            <Form role="form">
+            <Form role="form" onSubmit={handlesubmit}>
               <FormGroup>
                 <InputGroup className="input-group-alternative mb-3">
                   <InputGroupAddon addonType="prepend">
@@ -90,7 +103,7 @@ const Register = () => {
                       <i className="ni ni-hat-3" />
                     </InputGroupText>
                   </InputGroupAddon>
-                  <Input placeholder="Name" type="text" />
+                  <Input placeholder="Name" value={name} onChange={(e)=>setName(e.target.value)} type="text" />
                 </InputGroup>
               </FormGroup>
               <FormGroup>
@@ -101,6 +114,7 @@ const Register = () => {
                     </InputGroupText>
                   </InputGroupAddon>
                   <Input
+                    value={email} onChange={(e)=>setEmail(e.target.value)}
                     placeholder="Email"
                     type="email"
                     autoComplete="new-email"
@@ -115,6 +129,7 @@ const Register = () => {
                     </InputGroupText>
                   </InputGroupAddon>
                   <Input
+                    value={password} onChange={(e)=>setPassword(e.target.value)}
                     placeholder="Password"
                     type="password"
                     autoComplete="new-password"
@@ -134,6 +149,8 @@ const Register = () => {
                       className="custom-control-input"
                       id="customCheckRegister"
                       type="checkbox"
+                      value={privacy}
+                      onChange={()=>setPrivacy(!privacy)}
                     />
                     <label
                       className="custom-control-label"
@@ -141,7 +158,7 @@ const Register = () => {
                     >
                       <span className="text-muted">
                         I agree with the{" "}
-                        <a href="#pablo" onClick={(e) => e.preventDefault()}>
+                        <a href="#pablo"  onClick={(e) => e.preventDefault()}>
                           Privacy Policy
                         </a>
                       </span>
@@ -150,7 +167,7 @@ const Register = () => {
                 </Col>
               </Row>
               <div className="text-center">
-                <Button className="mt-4" color="primary" type="button">
+                <Button className="mt-4" color="primary" type="submit">
                   Create account
                 </Button>
               </div>
