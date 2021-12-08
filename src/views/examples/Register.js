@@ -18,6 +18,8 @@
 
 // reactstrap components
 import { useState } from "react";
+import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import Firebase from '../../Firebase/config'
 import {
   Button,
   Card,
@@ -38,11 +40,22 @@ const Register = () => {
   const [email,setEmail] = useState('')
   const [password,setPassword] = useState('')
   const [privacy,setPrivacy] = useState(false)
+  var errorMessage
   // const [isStrong,setIsStrong] = useState()
 
   const handlesubmit = (e) =>{
     e.preventDefault()
-    console.log(name,email,password);
+    const auth = getAuth();
+    createUserWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        const userUID = userCredential.user.uid;
+        const userEmail = userCredential.user.email;
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        errorMessage = error.message;
+        console.log(errorMessage);
+      });
     
   }
 
