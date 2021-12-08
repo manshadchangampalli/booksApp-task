@@ -34,14 +34,15 @@ import {
   Row,
   Col,
 } from "reactstrap";
+import { issuedAtTime } from "@firebase/util";
 
 const Register = () => {
   const [name,setName] = useState('')
   const [email,setEmail] = useState('')
   const [password,setPassword] = useState('')
   const [privacy,setPrivacy] = useState(false)
+  const [isStrong,setIsStrong] = useState("weak")
   var errorMessage
-  // const [isStrong,setIsStrong] = useState()
 
   const handlesubmit = (e) =>{
     e.preventDefault()
@@ -54,10 +55,20 @@ const Register = () => {
       .catch((error) => {
         const errorCode = error.code;
         errorMessage = error.message;
-        console.log(errorMessage);
       });
-    
   }
+
+  const passwordLengthChecker = (e) =>{
+    setPassword(e)
+    if(password.length >= 7){
+      setIsStrong("Strong")
+    }else if(password.length < 6){
+      setIsStrong("weak")
+    }
+    console.log(password.length,isStrong);
+  }
+
+
 
   return (
     <>
@@ -142,7 +153,7 @@ const Register = () => {
                     </InputGroupText>
                   </InputGroupAddon>
                   <Input
-                    value={password} onChange={(e)=>setPassword(e.target.value)}
+                    value={password} onChange={(e)=>passwordLengthChecker(e.target.value)}
                     placeholder="Password"
                     type="password"
                     autoComplete="new-password"
@@ -152,7 +163,7 @@ const Register = () => {
               <div className="text-muted font-italic">
                 <small>
                   password strength:{" "}
-                  <span className="text-success font-weight-700">strong</span>
+                  <span style={isStrong==="weak" ? {color:"red"}:{color:"green"}}  className="font-weight-700">{isStrong}</span>
                 </small>
               </div>
               <Row className="my-4">
@@ -180,7 +191,7 @@ const Register = () => {
                 </Col>
               </Row>
               <div className="text-center">
-                <Button className="mt-4" color="primary" type="submit">
+                <Button disabled={isStrong==="Strong"&& privacy?false:true}  className="mt-4" color="primary" type="submit">
                   Create account
                 </Button>
               </div>
